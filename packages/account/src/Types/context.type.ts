@@ -1,9 +1,6 @@
 import { TToken } from './common-prop.type';
 
 export type TApiContext = {
-    api_tokens: NonNullable<TToken[]> | undefined;
+    api_tokens: NonNullable<TToken[]>;
     deleteToken: (token: string) => Promise<void>;
-    footer_ref: Element | DocumentFragment;
-    overlay_ref: HTMLDivElement;
-    toggleOverlay: () => void;
 };

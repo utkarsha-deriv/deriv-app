@@ -1,7 +1,8 @@
 /** Add types that are shared between components */
-import { FormikProps, FormikValues } from 'formik';
-import { Authorize, ResidenceList } from '@deriv/api-types';
-import { Redirect } from 'react-router-dom';
+import { FormikHandlers, FormikProps, FormikValues } from 'formik';
+import { Authorize, IdentityVerificationAddDocumentResponse, ResidenceList } from '@deriv/api-types';
+import { Redirect, RouteProps } from 'react-router-dom';
+import { TPage404 } from '../Constants/routes-config';
 
 export type TToken = {
     display_name: string;
@@ -65,7 +66,7 @@ export type TRoute = {
     icon?: string;
     default?: boolean;
     to?: string;
-    component?: ((cashier_routes?: TRoute[]) => JSX.Element) | typeof Redirect;
+    component?: ((props?: RouteProps['component']) => JSX.Element) | Partial<typeof Redirect> | TPage404;
     getTitle?: () => string;
     subroutes?: TRoute[];
 };
@@ -149,3 +150,55 @@ export type TPersonalDetailsForm = {
 } & FormikProps<FormikValues>;
 
 export type TInputFieldValues = Record<string, string>;
+
+export type TIDVVerificationResponse = IdentityVerificationAddDocumentResponse & { error: { message: string } };
+
+export type TDocumentList = {
+    id: string;
+    text: string;
+    value?: string;
+    sample_image?: string;
+    example_format?: string;
+    additional?: {
+        display_name?: string;
+        example_format?: string;
+    };
+};
+
+type TFormProps = {
+    document_type: TDocumentList;
+    document_number: string;
+    document_additional?: string;
+    error_message?: string;
+};
+
+export type TIDVForm = {
+    selected_country: ResidenceList[0];
+    hide_hint?: boolean;
+    class_name?: string;
+    can_skip_document_verification: boolean;
+} & Partial<FormikHandlers> &
+    FormikProps<TFormProps>;
+
+export type TVerificationStatus = Readonly<
+    Record<'none' | 'pending' | 'rejected' | 'verified' | 'expired' | 'suspected', string>
+>;
+
+type TDocumentList = Array<{
+    id: string;
+    text: string;
+    value?: string;
+    sample_image?: string;
+    example_format?: string;
+    additional?: {
+        display_name: string;
+        format: string;
+    };
+}>;
+
+export type TIDVFormValues = {
+    document_type: TDocumentList[0];
+    document_number: string;
+    document_additional?: string;
+    error_message?: string;
+};

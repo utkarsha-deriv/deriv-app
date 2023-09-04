@@ -2,20 +2,15 @@ import React from 'react';
 import { FormikValues } from 'formik';
 import { act, render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { getPropertyValue, isDesktop, isMobile, useIsMounted, WS } from '@deriv/shared';
-import { StoreProvider, mockStore } from '@deriv/stores';
+import { isMobile, getPropertyValue, useIsMounted, WS } from '@deriv/shared';
+import { mockStore, StoreProvider } from '@deriv/stores';
 import ApiToken from '../api-token';
 
 jest.mock('@deriv/shared', () => ({
     ...jest.requireActual('@deriv/shared'),
     getPropertyValue: jest.fn(() => []),
-    isDesktop: jest.fn(() => true),
     isMobile: jest.fn(() => false),
     useIsMounted: jest.fn().mockImplementation(() => () => true),
-}));
-jest.mock('@deriv/shared/src/services/ws-methods', () => ({
-    __esModule: true, // this property makes it work,
-    default: 'mockedDefaultExport',
     WS: {
         apiToken: jest.fn(() =>
             Promise.resolve({
@@ -34,7 +29,6 @@ jest.mock('@deriv/shared/src/services/ws-methods', () => ({
             ),
         },
     },
-    useWS: () => undefined,
 }));
 
 jest.mock('@deriv/components', () => ({
@@ -60,8 +54,6 @@ describe('<ApiToken/>', () => {
     const learn_more_title = 'Learn more about API token';
     const read_scope_description =
         'This scope will allow third-party apps to view your account activity, settings, limits, balance sheets, trade purchase history, and more.';
-    const our_access_description =
-        "To access our mobile apps and other third-party apps, you'll first need to generate an API token.";
     const trading_info_scope_description =
         'This scope will allow third-party apps to withdraw to payment agents and make inter-account transfers for you.';
     const select_scopes_msg = 'Select scopes based on the access you need.';
@@ -73,41 +65,20 @@ describe('<ApiToken/>', () => {
     const your_access_description =
         "To access your mobile apps and other third-party apps, you'll first need to generate an API token.";
 
-    let store = mockStore({});
-    store = mockStore({
+    const store = mockStore({
         client: {
             is_switching: false,
         },
-    });
-    const mock_props = {
-        footer_ref: document.createElement('div'),
-        is_app_settings: false,
-        overlay_ref: document.createElement('div'),
-        setIsOverlayShown: jest.fn(),
-        WS: {
-            apiToken: jest.fn(() =>
-                Promise.resolve({
-                    api_token: {
-                        tokens: [],
-                    },
-                })
-            ),
-            authorized: {
-                apiToken: jest.fn(() =>
-                    Promise.resolve({
-                        api_token: {
-                            tokens: [],
-                        },
-                    })
-                ),
-            },
+        ui: {
+            is_desktop: false,
+            is_mobile: true,
         },
-    };
+    });
 
     it('should render ApiToken component without app_settings and footer', async () => {
         render(
             <StoreProvider store={store}>
-                <ApiToken {...mock_props} />
+                <ApiToken />
             </StoreProvider>
         );
 
@@ -121,17 +92,37 @@ describe('<ApiToken/>', () => {
         expect(await screen.findByText(token_using_description)).toBeInTheDocument();
         expect(await screen.findByText(trade_scope_description)).toBeInTheDocument();
         expect(await screen.findByText(trading_info_description)).toBeInTheDocument();
-        expect(await screen.findByText(your_access_description)).toBeInTheDocument();
+        expect(await screen.findByText(read_scope_description)).toBeInTheDocument();
+        expect(screen.queryByText(learn_more_title)).not.toBeInTheDocument();
+    });
+
+    it('should render ApiToken component without app_settings and footer for mobile', async () => {
+        (isMobile as jest.Mock).mockReturnValueOnce(true);
+
+        render(
+            <StoreProvider store={store}>
+                <ApiToken />
+            </StoreProvider>
+        );
+
+        expect(await screen.findByText(admin_scope_description)).toBeInTheDocument();
+        expect(await screen.findByText(admin_scope_note)).toBeInTheDocument();
+        expect(await screen.findByText(trading_info_scope_description)).toBeInTheDocument();
+        expect(await screen.findByText(select_scopes_msg)).toBeInTheDocument();
+        expect(await screen.findByText(token_creation_description)).toBeInTheDocument();
+        expect(await screen.findByText(token_using_description)).toBeInTheDocument();
+        expect(await screen.findByText(trade_scope_description)).toBeInTheDocument();
+        expect(await screen.findByText(trading_info_description)).toBeInTheDocument();
         expect(await screen.findByText(read_scope_description)).toBeInTheDocument();
         expect(screen.queryByText(learn_more_title)).not.toBeInTheDocument();
     });
 
     it('should not render ApiToken component if is not mounted', () => {
-        (useIsMounted as jest.Mock).mockImplementationOnce(() => () => false);
+        useIsMounted();
 
         render(
             <StoreProvider store={store}>
-                <ApiToken {...mock_props} />
+                <ApiToken />
             </StoreProvider>
         );
 
@@ -151,74 +142,10 @@ describe('<ApiToken/>', () => {
         expect(screen.queryByText(read_scope_description)).not.toBeInTheDocument();
     });
 
-    it('should render ApiToken component without app_settings and footer for mobile', async () => {
-        (isMobile as jest.Mock).mockReturnValueOnce(true);
-        (isDesktop as jest.Mock).mockReturnValueOnce(false);
-
-        render(
-            <StoreProvider store={store}>
-                <ApiToken {...mock_props} />
-            </StoreProvider>
-        );
-
-        expect(await screen.findByText(admin_scope_description)).toBeInTheDocument();
-        expect(await screen.findByText(admin_scope_note)).toBeInTheDocument();
-        expect(await screen.findByText(trading_info_scope_description)).toBeInTheDocument();
-        expect(await screen.findByText(select_scopes_msg)).toBeInTheDocument();
-        expect(await screen.findByText(token_creation_description)).toBeInTheDocument();
-        expect(await screen.findByText(token_using_description)).toBeInTheDocument();
-        expect(await screen.findByText(trade_scope_description)).toBeInTheDocument();
-        expect(await screen.findByText(trading_info_description)).toBeInTheDocument();
-        expect(await screen.findByText(read_scope_description)).toBeInTheDocument();
-        expect(screen.queryByText(learn_more_title)).not.toBeInTheDocument();
-    });
-
-    it('should render ApiToken component with app_settings', async () => {
-        mock_props.is_app_settings = true;
-
-        render(
-            <StoreProvider store={store}>
-                <ApiToken {...mock_props} />
-            </StoreProvider>
-        );
-
-        await waitFor(() => {
-            expect(screen.queryByText(our_access_description)).not.toBeInTheDocument();
-        });
-    });
-
-    it('should render ApiTokenFooter, show and close ApiTokenOverlay after triggering links', async () => {
-        const footer_portal_root_el = document.createElement('div');
-        document.body.appendChild(footer_portal_root_el);
-        const overlay_portal_root_el = document.createElement('div');
-        document.body.appendChild(overlay_portal_root_el);
-
-        mock_props.footer_ref = footer_portal_root_el;
-        mock_props.overlay_ref = overlay_portal_root_el;
-
-        render(
-            <StoreProvider store={store}>
-                <ApiToken {...mock_props} />
-            </StoreProvider>
-        );
-
-        expect(await screen.findByText(learn_more_title)).toBeInTheDocument();
-        expect(screen.queryByText(our_access_description)).not.toBeInTheDocument();
-
-        userEvent.click(await screen.findByText(learn_more_title));
-        expect(await screen.findByText(our_access_description)).toBeInTheDocument();
-
-        userEvent.click(await screen.findByRole('button', { name: /done/i }));
-        expect(screen.queryByText(our_access_description)).not.toBeInTheDocument();
-
-        document.body.removeChild(footer_portal_root_el);
-        document.body.removeChild(overlay_portal_root_el);
-    });
-
     it('should choose checkbox, enter a valid value and create token', async () => {
         render(
             <StoreProvider store={store}>
-                <ApiToken {...mock_props} />
+                <ApiToken />
             </StoreProvider>
         );
 
@@ -285,7 +212,7 @@ describe('<ApiToken/>', () => {
 
         render(
             <StoreProvider store={store}>
-                <ApiToken {...mock_props} />
+                <ApiToken />
             </StoreProvider>
         );
 
@@ -348,7 +275,7 @@ describe('<ApiToken/>', () => {
 
         render(
             <StoreProvider store={store}>
-                <ApiToken {...mock_props} />
+                <ApiToken />
             </StoreProvider>
         );
 
@@ -388,8 +315,6 @@ describe('<ApiToken/>', () => {
 
     it('should render created tokens for mobile', async () => {
         (isMobile as jest.Mock).mockReturnValue(true);
-        (isDesktop as jest.Mock).mockReturnValue(false);
-
         (getPropertyValue as jest.Mock).mockReturnValue([
             {
                 display_name: 'First test token',
@@ -416,7 +341,7 @@ describe('<ApiToken/>', () => {
 
         render(
             <StoreProvider store={store}>
-                <ApiToken {...mock_props} />
+                <ApiToken />
             </StoreProvider>
         );
 
@@ -444,7 +369,7 @@ describe('<ApiToken/>', () => {
 
         render(
             <StoreProvider store={store}>
-                <ApiToken {...mock_props} />
+                <ApiToken />
             </StoreProvider>
         );
 
