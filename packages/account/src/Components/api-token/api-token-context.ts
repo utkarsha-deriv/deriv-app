@@ -2,10 +2,7 @@ import * as React from 'react';
 import { TApiContext } from 'Types';
 
 const ApiTokenContext = React.createContext<TApiContext>({
-    api_tokens: undefined,
-    overlay_ref: document.createElement('div'),
-    footer_ref: document.createElement('div'),
-    toggleOverlay: () => null,
+    api_tokens: [],
     deleteToken: () => Promise.resolve(),
 });
 
