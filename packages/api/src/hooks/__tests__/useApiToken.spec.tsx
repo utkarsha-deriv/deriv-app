@@ -2,6 +2,7 @@ import { renderHook } from '@testing-library/react-hooks';
 import useApiToken from '../useApiToken';
 import APIProvider from '../../APIProvider';
 import React from 'react';
+import { WS } from '@deriv/shared';
 
 const mock_token = 'ABCDefgh1234567890';
 
@@ -42,5 +43,18 @@ describe('useApiToken', () => {
         await waitForNextUpdate();
 
         expect(result.current.api_token_data?.api_token?.tokens).toHaveLength(2);
+    });
+
+    it('should return error when error is thrown', async () => {
+        const error_message = { message: 'Invalid API token' };
+        WS.send.mockResolvedValueOnce({ error: error_message });
+        const wrapper = ({ children }: { children: JSX.Element }) => <APIProvider>{children}</APIProvider>;
+        const { result, waitForNextUpdate } = renderHook(() => useApiToken(), { wrapper });
+
+        result.current.send();
+
+        await waitForNextUpdate();
+
+        expect(result.current.error).toMatchObject(error_message);
     });
 });
