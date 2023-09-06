@@ -1,7 +1,7 @@
 import React from 'react';
 import classNames from 'classnames';
 import { Formik, Form, Field, FormikErrors, FieldProps, FormikHelpers } from 'formik';
-import { useSetApiToken, useGetApiToken } from '@deriv/api';
+import { useApiToken } from '@deriv/api';
 import { APITokenResponse, ApiToken as TApitoken } from '@deriv/api-types';
 import { Timeline, Input, Button, ThemedScrollbars, Loading } from '@deriv/components';
 import { getPropertyValue } from '@deriv/shared';
@@ -38,8 +38,7 @@ const ApiToken = () => {
     const { is_switching } = client;
     const { is_desktop, is_mobile } = ui;
 
-    const { updated_api_token_data, update, isSuccess, isLoading } = useSetApiToken();
-    const { api_token_data, isSuccess: is_api_token_data_fetched } = useGetApiToken();
+    const { api_token_data, send, isSuccess, isLoading } = useApiToken();
 
     const [state, setState] = React.useReducer(
         (prev_state: Partial<AptTokenState>, value: Partial<AptTokenState>) => ({
@@ -65,16 +64,20 @@ const ApiToken = () => {
     }, []);
 
     React.useEffect(() => {
-        if (is_api_token_data_fetched) {
-            populateTokenResponse(api_token_data as APITokenResponse);
-        }
-    }, [api_token_data, is_api_token_data_fetched, populateTokenResponse]);
+        /**
+         * Fetch all API tokens
+         */
+        send();
+    }, [send]);
 
     React.useEffect(() => {
+        /**
+         * Update API token list when new token is created or a token is deleted
+         */
         if (isSuccess) {
-            populateTokenResponse(updated_api_token_data as APITokenResponse);
+            populateTokenResponse(api_token_data as APITokenResponse);
         }
-    }, [isSuccess, populateTokenResponse, updated_api_token_data]);
+    }, [isSuccess, populateTokenResponse, api_token_data]);
 
     const initial_form = {
         token_name: '',
@@ -114,7 +117,7 @@ const ApiToken = () => {
         ) as NonNullable<NonNullable<TApitoken['tokens']>[0]['scopes']>;
 
     const handleSubmit = (values: TApiTokenForm, { setSubmitting, resetForm }: FormikHelpers<TApiTokenForm>) => {
-        update({
+        send({
             new_token: values.token_name,
             new_token_scopes: selectedTokenScope(values),
         });
@@ -130,7 +133,7 @@ const ApiToken = () => {
     };
 
     const deleteToken = (token: string) => {
-        update({ delete_token: token });
+        send({ delete_token: token });
     };
 
     const { api_tokens, error_message } = state;
@@ -157,7 +160,7 @@ const ApiToken = () => {
                     <div className='da-api-token__wrapper'>
                         <ThemedScrollbars className='da-api-token__scrollbars' is_bypassed={is_mobile}>
                             {is_mobile && <ApiTokenArticle />}
-                            <Formik initialValues={initial_form} onSubmit={handleSubmit}>
+                            <Formik initialValues={initial_form} onSubmit={handleSubmit} validate={validateFields}>
                                 {({
                                     values,
                                     errors,
@@ -236,12 +239,12 @@ const ApiToken = () => {
                                                             }
                                                         )}
                                                         type='submit'
-                                                        // is_disabled={
-                                                        //     !dirty ||
-                                                        //     isSubmitting ||
-                                                        //     !isValid ||
-                                                        //     !selectedTokenScope(values).length
-                                                        // }
+                                                        is_disabled={
+                                                            !dirty ||
+                                                            isSubmitting ||
+                                                            !isValid ||
+                                                            !selectedTokenScope(values).length
+                                                        }
                                                         has_effect
                                                         is_loading={isSubmitting}
                                                         is_submit_success={isLoading}
