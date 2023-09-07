@@ -53,7 +53,7 @@ describe('ApiTokenDeleteButton', () => {
         expect(screen.getByText('Delete this token')).toBeInTheDocument();
     });
 
-    it('should not Delete this token when mouse leave', () => {
+    it('should not display Delete this token when mouse leave', () => {
         renderAPIDeleteButton();
         const delete_icon = screen.getByTestId('dt_token_delete_icon');
         userEvent.hover(delete_icon);
@@ -85,15 +85,13 @@ describe('ApiTokenDeleteButton', () => {
         expect(screen.queryByRole('button', { name: 'Yes, delete' })).not.toBeInTheDocument();
     });
 
-    it('should should trigger deleteToken when clicked on Yes, delete', async () => {
+    it('should should trigger deleteToken when clicked on Yes, delete', () => {
         renderAPIDeleteButton();
         const delete_icon = screen.getByTestId('dt_token_delete_icon');
         userEvent.click(delete_icon);
         expect(screen.getByRole('button', { name: 'Cancel' })).toBeInTheDocument();
         const delete_token_button = screen.getByRole('button', { name: 'Yes, delete' });
-        act(() => {
-            userEvent.click(delete_token_button);
-        });
+        userEvent.click(delete_token_button);
         expect(mock_props.deleteToken).toBeCalled();
     });
 });

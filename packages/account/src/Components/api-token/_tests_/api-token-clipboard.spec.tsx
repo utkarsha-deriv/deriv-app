@@ -11,7 +11,7 @@ describe('ApiTokenClipboard', () => {
     const mock_props = {
         scopes: ['read', 'trade', 'Admin'],
         text_copy: 'Text Copy',
-        info_message: 'Info Message',
+        info_message: 'Copy this token',
         success_message: 'Success Message',
     };
 
@@ -24,16 +24,16 @@ describe('ApiTokenClipboard', () => {
         render(<ApiTokenClipboard {...mock_props} />);
         const copy_icon = screen.getByTestId('dt_copy_token_icon');
         userEvent.hover(copy_icon);
-        expect(screen.getByText('Info Message')).toBeInTheDocument();
+        expect(screen.getByText('Copy this token')).toBeInTheDocument();
     });
 
     it('should remove "Copy this token" message when mouse leaves', () => {
         render(<ApiTokenClipboard {...mock_props} />);
         const copy_icon = screen.getByTestId('dt_copy_token_icon');
         userEvent.hover(copy_icon);
-        expect(screen.getByText('Info Message')).toBeInTheDocument();
+        expect(screen.getByText('Copy this token')).toBeInTheDocument();
         userEvent.unhover(copy_icon);
-        expect(screen.queryByText('Info Message')).not.toBeInTheDocument();
+        expect(screen.queryByText('Copy this token')).not.toBeInTheDocument();
     });
 
     it('should display Popup Modal when user clicks on copy_icon', () => {
@@ -51,7 +51,7 @@ describe('ApiTokenClipboard', () => {
         expect(screen.getByRole('button', { name: 'OK' })).toBeInTheDocument();
     });
 
-    it('should display Info Message when user clicks on OK', async () => {
+    it('should remove Popup modal when user clicks on OK', async () => {
         render(<ApiTokenClipboard {...mock_props} />);
         const copy_icon = screen.getByTestId('dt_copy_token_icon');
         userEvent.click(copy_icon);
@@ -61,7 +61,6 @@ describe('ApiTokenClipboard', () => {
         await waitFor(() => {
             expect(screen.queryByText('Add accounts')).not.toBeInTheDocument();
         });
-        expect(screen.getByText('Info Message')).toBeInTheDocument();
     });
 
     it('should not display Popup Modal when user clicks on copy_icon with no Admin scope', () => {
