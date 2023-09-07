@@ -38,11 +38,11 @@ describe('useApiToken', () => {
         const wrapper = ({ children }: { children: JSX.Element }) => <APIProvider>{children}</APIProvider>;
         const { result, waitForNextUpdate } = renderHook(() => useApiToken(), { wrapper });
 
-        result.current.send();
+        result.current.getApiToken();
 
         await waitForNextUpdate();
 
-        expect(result.current.api_token_data?.api_token?.tokens).toHaveLength(2);
+        expect(result.current.api_token_data?.tokens).toHaveLength(2);
     });
 
     it('should return error when error is thrown', async () => {
@@ -51,7 +51,7 @@ describe('useApiToken', () => {
         const wrapper = ({ children }: { children: JSX.Element }) => <APIProvider>{children}</APIProvider>;
         const { result, waitForNextUpdate } = renderHook(() => useApiToken(), { wrapper });
 
-        result.current.send();
+        result.current.getApiToken();
 
         await waitForNextUpdate();
 

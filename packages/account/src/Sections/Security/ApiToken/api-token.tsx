@@ -36,7 +36,8 @@ const ApiToken = () => {
     const { is_switching } = client;
     const { is_desktop, is_mobile } = ui;
 
-    const { api_token_data, send, isSuccess, isLoading, isError, error } = useApiToken();
+    const { api_token_data, getApiToken, createApiToken, deleteApiToken, isSuccess, isLoading, isError, error } =
+        useApiToken();
 
     const [state, setState] = React.useReducer(
         (prev_state: Partial<AptTokenState>, value: Partial<AptTokenState>) => ({
@@ -53,8 +54,8 @@ const ApiToken = () => {
         /**
          * Fetch all API tokens
          */
-        send();
-    }, [send]);
+        getApiToken();
+    }, [getApiToken]);
 
     React.useEffect(() => {
         /**
@@ -63,7 +64,7 @@ const ApiToken = () => {
         if (isSuccess) {
             // populateTokenResponse(api_token_data as APITokenResponse);
             setState({
-                api_tokens: getPropertyValue(api_token_data, ['api_token', 'tokens']),
+                api_tokens: getPropertyValue(api_token_data, ['tokens']),
             });
         } else if (isError) {
             setState({
@@ -110,23 +111,16 @@ const ApiToken = () => {
         ) as NonNullable<NonNullable<TApitoken['tokens']>[0]['scopes']>;
 
     const handleSubmit = (values: TApiTokenForm, { setSubmitting, resetForm }: FormikHelpers<TApiTokenForm>) => {
-        send({
+        createApiToken({
             new_token: values.token_name,
             new_token_scopes: selectedTokenScope(values),
         });
-        // if (token_response.error) {
-        //     setFieldError('token_name', token_response.error.message);
-        // } else if (isMounted()) {
-        //     setState({
-        //         api_tokens: getPropertyValue(token_response, ['api_token', 'tokens']),
-        //     });
-        // }
         resetForm();
         setSubmitting(false);
     };
 
     const deleteToken = (token: string) => {
-        send({ delete_token: token });
+        deleteApiToken(token);
     };
 
     const { api_tokens, error_message } = state;
@@ -142,6 +136,7 @@ const ApiToken = () => {
     const context_value = {
         api_tokens,
         deleteToken,
+        isSuccess,
     };
 
     const api_token_card_array = getApiTokenCardDetails();
