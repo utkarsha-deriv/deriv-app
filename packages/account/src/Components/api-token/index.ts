@@ -1,7 +1,3 @@
-// import ApiToken from './api-token';
-
-// export default ApiToken;
-
 export { default as ApiTokenArticle } from './api-token-article';
 export { default as ApiTokenCard } from './api-token-card';
 export { default as ApiTokenClipboard } from './api-token-clipboard';

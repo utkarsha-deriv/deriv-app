@@ -49,18 +49,6 @@ const ApiToken = () => {
         }
     );
 
-    // const populateTokenResponse = React.useCallback((response: APITokenResponse) => {
-    //     if (response.error) {
-    //         setState({
-    //             error_message: getPropertyValue(response, ['error', 'message']),
-    //         });
-    //     } else {
-    //         setState({
-    //             api_tokens: getPropertyValue(response, ['api_token', 'tokens']),
-    //         });
-    //     }
-    // }, []);
-
     React.useEffect(() => {
         /**
          * Fetch all API tokens
