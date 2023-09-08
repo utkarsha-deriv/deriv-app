@@ -1,16 +1,17 @@
 import React from 'react';
 import { FormikValues } from 'formik';
-import { act, fireEvent, render, screen, waitFor } from '@testing-library/react';
+import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import { APIProvider, useApiToken } from '@deriv/api';
+import { APITokenResponse } from '@deriv/api-types';
 import { isMobile, getPropertyValue } from '@deriv/shared';
 import { mockStore, StoreProvider } from '@deriv/stores';
 import ApiToken from '../api-token';
-import { APIProvider, useApiToken } from '@deriv/api';
 
 const mock_token = 'ABCDefgh1234567890';
 const mockSend = jest.fn();
 
-const api_data = {
+const api_data: Partial<APITokenResponse> = {
     api_token: {
         tokens: [
             {
@@ -208,8 +209,6 @@ describe('<ApiToken/>', () => {
     });
 
     it('should render created tokens and trigger delete', async () => {
-        // jest.useFakeTimers();
-
         (getPropertyValue as jest.Mock).mockReturnValue([
             {
                 display_name: 'First test token',
@@ -357,7 +356,6 @@ describe('<ApiToken/>', () => {
 
     it('should show token error if exists', async () => {
         useApiToken.mockReturnValue({
-            // api_token_data: { ...api_data },
             isSuccess: false,
             isError: true,
             isLoading: false,

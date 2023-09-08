@@ -11,11 +11,8 @@ import { TToken } from 'Types';
 import { ApiTokenContext, ApiTokenArticle, ApiTokenCard, ApiTokenTable } from 'Components/api-token';
 import InlineNoteWithIcon from 'Components/inline-note-with-icon';
 import LoadErrorMessage from 'Components/load-error-message';
-import { getApiTokenCardDetails } from 'Constants/api-token-card-details';
+import { getApiTokenCardDetails, TOKEN_LIMITS } from 'Constants/api-token-card-details';
 import './api-token.scss';
-
-const MIN_TOKEN = 2;
-const MAX_TOKEN = 32;
 
 type AptTokenState = {
     api_tokens: NonNullable<TToken[]>;
@@ -62,7 +59,6 @@ const ApiToken = () => {
          * Update API token list when new token is created or a token is deleted
          */
         if (isSuccess) {
-            // populateTokenResponse(api_token_data as APITokenResponse);
             setState({
                 api_tokens: getPropertyValue(api_token_data, ['tokens']),
             });
@@ -73,7 +69,7 @@ const ApiToken = () => {
         }
     }, [isSuccess, api_token_data, isError, error]);
 
-    const initial_form = {
+    const initial_form: TApiTokenForm = {
         token_name: '',
         read: false,
         trade: false,
@@ -90,16 +86,16 @@ const ApiToken = () => {
             errors.token_name = localize('Please enter a token name.');
         } else if (!/^[A-Za-z0-9\s_]+$/g.test(token_name)) {
             errors.token_name = localize('Only letters, numbers, and underscores are allowed.');
-        } else if (token_name.length < MIN_TOKEN) {
+        } else if (token_name.length < TOKEN_LIMITS.MIN) {
             errors.token_name = localize(
                 'Length of token name must be between {{MIN_TOKEN}} and {{MAX_TOKEN}} characters.',
                 {
-                    MIN_TOKEN,
-                    MAX_TOKEN,
+                    MIN_TOKEN: TOKEN_LIMITS.MIN,
+                    MAX_TOKEN: TOKEN_LIMITS.MAX,
                 }
             );
-        } else if (token_name.length > MAX_TOKEN) {
-            errors.token_name = localize('Maximum {{MAX_TOKEN}} characters.', { MAX_TOKEN });
+        } else if (token_name.length > TOKEN_LIMITS.MAX) {
+            errors.token_name = localize('Maximum {{MAX_TOKEN}} characters.', { MAX_TOKEN: TOKEN_LIMITS.MAX });
         }
 
         return errors;
@@ -163,7 +159,9 @@ const ApiToken = () => {
                                     <Form noValidate>
                                         <Timeline className='da-api-token__timeline' line_height='xxxl'>
                                             <Timeline.Item
-                                                item_title={localize('Select scopes based on the access you need.')}
+                                                item_title={
+                                                    <Localize i18n_default_text='Select scopes based on the access you need.' />
+                                                }
                                             >
                                                 <div className='da-api-token__checkbox-wrapper'>
                                                     {api_token_card_array.map(card => (
@@ -179,7 +177,7 @@ const ApiToken = () => {
                                                                     message={
                                                                         <Localize i18n_default_text='To avoid loss of funds, do not share tokens with the Admin scope with unauthorised parties.' />
                                                                     }
-                                                                    title={localize('Note')}
+                                                                    title={<Localize i18n_default_text='Note' />}
                                                                 />
                                                             )}
                                                         </ApiTokenCard>
@@ -187,9 +185,9 @@ const ApiToken = () => {
                                                 </div>
                                             </Timeline.Item>
                                             <Timeline.Item
-                                                item_title={localize(
-                                                    "Name your token and click on 'Create' to generate your token."
-                                                )}
+                                                item_title={
+                                                    <Localize i18n_default_text="Name your token and click on 'Create' to generate your token." />
+                                                }
                                             >
                                                 <div className='da-api-token__input-group'>
                                                     <Field name='token_name'>
@@ -199,16 +197,16 @@ const ApiToken = () => {
                                                                 data-lpignore='true'
                                                                 type='text'
                                                                 className='da-api-token__input dc-input__input-group'
-                                                                label={localize('Token name')}
+                                                                label={<Localize i18n_default_text='Token name' />}
                                                                 value={values.token_name}
                                                                 onChange={e => {
                                                                     setFieldTouched('token_name', true);
                                                                     handleChange(e);
                                                                 }}
                                                                 onBlur={handleBlur}
-                                                                hint={localize(
-                                                                    'Length of token name must be between 2 and 32 characters.'
-                                                                )}
+                                                                hint={
+                                                                    <Localize i18n_default_text='Length of token name must be between 2 and 32 characters.' />
+                                                                }
                                                                 required
                                                                 error={
                                                                     touched.token_name && errors.token_name
@@ -236,14 +234,17 @@ const ApiToken = () => {
                                                         has_effect
                                                         is_loading={isSubmitting}
                                                         is_submit_success={isLoading}
-                                                        text={localize('Create')}
                                                         primary
                                                         large
-                                                    />
+                                                    >
+                                                        <Localize i18n_default_text='Create' />
+                                                    </Button>
                                                 </div>
                                             </Timeline.Item>
                                             <Timeline.Item
-                                                item_title={localize('Copy and paste the token into the app.')}
+                                                item_title={
+                                                    <Localize i18n_default_text='Copy and paste the token into the app.' />
+                                                }
                                             >
                                                 <ApiTokenTable />
                                             </Timeline.Item>
