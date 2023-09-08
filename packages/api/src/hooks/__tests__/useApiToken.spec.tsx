@@ -4,8 +4,6 @@ import APIProvider from '../../APIProvider';
 import React from 'react';
 import { WS } from '@deriv/shared';
 
-const mock_token = 'ABCDefgh1234567890';
-
 jest.mock('@deriv/shared', () => ({
     WS: {
         send: jest.fn().mockResolvedValueOnce({
@@ -17,14 +15,14 @@ jest.mock('@deriv/shared', () => ({
                         display_name: 'Created by script',
                         last_used: '',
                         scopes: ['read', 'trade', 'payments', 'admin'],
-                        token: mock_token,
+                        token: '',
                         valid_for_ip: '',
                     },
                     {
                         display_name: 'test12',
                         last_used: '',
                         scopes: ['read', 'payments'],
-                        token: mock_token,
+                        token: '',
                         valid_for_ip: '',
                     },
                 ],
