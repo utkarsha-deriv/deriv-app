@@ -5,6 +5,7 @@ export { default as useActiveWalletAccount } from './useActiveWalletAccount';
 export { default as useAllAvailableAccounts } from './useAllAvailableAccounts';
 export { default as useAuthorize } from './useAuthorize';
 export { default as useBalance } from './useBalance';
+export { default as useCloseDerivAccount } from './useCloseDerivAccount';
 export { default as useCurrencyConfig } from './useCurrencyConfig';
 export { default as useGetAccountStatus } from './useGetAccountStatus';
 export { default as useLandingCompany } from './useLandingCompany';
@@ -15,3 +16,5 @@ export { default as useTradingPlatformAccounts } from './useTradingPlatformAccou
 export { default as useTradingPlatformAvailableAccounts } from './useTradingPlatformAvailableAccounts';
 export { default as useWalletAccountsList } from './useWalletAccountsList';
 export { default as useApiToken } from './useApiToken';
+export { default as useCreateMT5Account } from './useCreateMT5Account';
+export { default as useCreateOtherCFDAccount } from './useCreateOtherCFDAccount';
