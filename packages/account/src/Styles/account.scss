@@ -1009,7 +1009,7 @@ $MIN_HEIGHT_FLOATING: calc(
             }
         }
 
-        @include mobile {
+        @include mobile-or-tablet-screen {
             &__list {
                 width: 90%;
                 margin: 1rem auto;
