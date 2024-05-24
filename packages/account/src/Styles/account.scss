@@ -1608,11 +1608,11 @@ $MIN_HEIGHT_FLOATING: calc(
         line-height: 1.43;
 
         & > ul {
-            padding-left: 3%;
+            padding-inline-start: 3%;
             list-style-type: disc;
 
             @include mobile-or-tablet-screen {
-                padding-left: 5%;
+                padding-inline-start: 5%;
             }
 
             @include rtl {
@@ -1649,18 +1649,18 @@ $MIN_HEIGHT_FLOATING: calc(
         &--cancel {
             margin-top: 2.4rem;
             margin-inline-end: 10px;
-            float: right;
+            float: inline-end;
 
             @include mobile-or-tablet-screen {
                 margin-top: -8px;
                 margin-inline-end: 10px;
-                float: right;
+                float: inline-end;
             }
         }
 
         &--close-account {
             margin-top: 2.4rem;
-            float: right;
+            float: inline-end;
 
             @include mobile-or-tablet-screen {
                 float: none;
