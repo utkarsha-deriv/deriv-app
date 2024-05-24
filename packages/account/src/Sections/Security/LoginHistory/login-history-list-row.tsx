@@ -6,9 +6,8 @@ import { Localize } from '@deriv/translations';
 import { useDevice } from '@deriv-com/ui';
 import getLoginHistoryTableHeaders from 'Constants/get-login-history-table-headers';
 import ListCell from './list-cell';
-import { observer } from '@deriv/stores';
 
-const LoginHistoryListRow = observer(({ id, date, action, browser, ip, status }: TLoginHistoryItems) => {
+const LoginHistoryListRow = ({ id, date, action, browser, ip, status }: TLoginHistoryItems) => {
     const { date_title, browser_title, action_title, ip_title, status_title } = getLoginHistoryTableHeaders();
     const { isDesktop } = useDevice();
 
@@ -50,6 +49,6 @@ const LoginHistoryListRow = observer(({ id, date, action, browser, ip, status }:
             </Table.Row>
         </div>
     );
-});
+};
 
 export default LoginHistoryListRow;
